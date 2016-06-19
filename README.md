@@ -1,6 +1,8 @@
 
 # react-media-context
 
+[![Build Status](https://travis-ci.org/jxnblk/react-media-context.svg?branch=master)](https://travis-ci.org/jxnblk/react-media-context)
+
 React higher-order component (HOC) to provide context for the currently matched media query.
 
 ## Getting Started
@@ -12,6 +14,9 @@ npm i -S react-media-context
 ## Usage
 
 ```js
+import React from 'react'
+import MediaContext from 'react-media-context'
+
 const Title = (props, context) => {
   const { media } = context
   let fontSize = 32
