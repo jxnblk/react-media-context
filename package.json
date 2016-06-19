@@ -7,6 +7,7 @@
     "prepublish": "mkdir -p dist && babel src --out-dir dist",
     "demo": "webpack -p",
     "start": "webpack-dev-server",
+    "gh-pages": "gh-pages -d demo",
     "test": "mocha test --compilers js:babel-register"
   },
   "keywords": [
@@ -30,6 +31,7 @@
     "babel-register": "^6.9.0",
     "enzyme": "^2.3.0",
     "expect": "^1.20.1",
+    "gh-pages": "^0.11.0",
     "html-loader": "^0.4.3",
     "markdown-loader": "^0.1.7",
     "mocha": "^2.5.3",
