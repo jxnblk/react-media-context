@@ -1,6 +1,4 @@
 
-import React from 'react'
-import { debounce } from 'lodash'
 import connectMediaContext from './connectMediaContext'
 
 const MediaContext = connectMediaContext('div')

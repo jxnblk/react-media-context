@@ -1,13 +1,16 @@
 
 import React from 'react'
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce'
+import difference from 'lodash/difference'
 
 const connectMediaContext = (Comp) => {
   class MediaContext extends React.Component {
     constructor () {
       super()
       this.state = {
-        media: []
+        media: [
+          'server'
+        ]
       }
       this.match = this.match.bind(this)
       this.handleResize = debounce(this.handleResize.bind(this), 100)
@@ -20,13 +23,20 @@ const connectMediaContext = (Comp) => {
     match () {
       const { queries } = this.props
       const media = []
+
       for (var key in queries) {
         const { matches } = window.matchMedia(queries[key])
         if (matches) {
           media.push(key)
         }
       }
-      this.setState({ media })
+
+      const diffs = difference(this.state.media, media)
+
+      if (diffs.length) {
+        console.log(diffs)
+        this.setState({ media })
+      }
     }
 
     handleResize () {
