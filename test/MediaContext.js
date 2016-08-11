@@ -5,7 +5,7 @@ import React from 'react'
 import ReactDOMServer from 'react-dom/server'
 import expect from 'expect'
 import { mount } from 'enzyme'
-import MediaContext from '../src/MediaContext'
+import MediaContext, { connectMediaContext } from '../src/MediaContext'
 
 describe('<MediaContext />', () => {
   let tree
@@ -14,7 +14,9 @@ describe('<MediaContext />', () => {
     // Stub matchMedia
     window.matchMedia = () => {
       return {
-        matches: false
+        matches: false,
+        addListener: (listener) => {},
+        removeListener: (listener) => {}
       }
     }
   })
@@ -25,10 +27,6 @@ describe('<MediaContext />', () => {
     }).toNotThrow()
   })
 
-  it('should have a default queries prop', () => {
-    expect(tree.props().queries).toBeAn('object')
-  })
-
   it('should have child context', () => {
     expect(tree.node.getChildContext().media).toEqual([])
   })
@@ -37,7 +35,9 @@ describe('<MediaContext />', () => {
     before(() => {
       window.matchMedia = (query) => {
         return {
-          matches: /max\-width:\s40em\)$/.test(query)
+          matches: /max\-width:\s40em\)$/.test(query),
+          addListener: (listener) => {},
+          removeListener: (listener) => {}
         }
       }
       tree = mount(<MediaContext />)
@@ -53,7 +53,9 @@ describe('<MediaContext />', () => {
     before(() => {
       window.matchMedia = (query) => {
         return {
-          matches: /min\-width:\s40em\)$/.test(query)
+          matches: /min\-width:\s40em\)$/.test(query),
+          addListener: (listener) => {},
+          removeListener: (listener) => {}
         }
       }
       tree = mount(<MediaContext />)
@@ -69,7 +71,9 @@ describe('<MediaContext />', () => {
     before(() => {
       window.matchMedia = (query) => {
         return {
-          matches: /min\-width:\s52em\)$/.test(query)
+          matches: /min\-width:\s52em\)$/.test(query),
+          addListener: (listener) => {},
+          removeListener: (listener) => {}
         }
       }
       tree = mount(<MediaContext />)
@@ -85,7 +89,9 @@ describe('<MediaContext />', () => {
     before(() => {
       window.matchMedia = (query) => {
         return {
-          matches: /min\-width:\s64em\)$/.test(query)
+          matches: /min\-width:\s64em\)$/.test(query),
+          addListener: (listener) => {},
+          removeListener: (listener) => {}
         }
       }
       tree = mount(<MediaContext />)
@@ -101,17 +107,20 @@ describe('<MediaContext />', () => {
     before(() => {
       window.matchMedia = (query) => {
         return {
-          matches: /min\-width:\s640px\)$/.test(query)
+          matches: /min\-width:\s640px\)$/.test(query),
+          addListener: (listener) => {},
+          removeListener: (listener) => {}
         }
       }
 
-      tree = mount(
-        <MediaContext
-          queries={{
-            'mobile': 'screen and (max-width: 640px)',
-            'desktop': 'screen and (min-width: 640px)'
-          }} />
-      )
+      const CustomMedia = connectMediaContext({
+        queries: {
+          mobile: 'screen and (max-width: 640px)',
+          desktop: 'screen and (min-width: 640px)'
+        }
+      })('div')
+
+      tree = mount(<CustomMedia />)
     })
 
     it('should include custom media queries in context', () => {
@@ -126,17 +135,20 @@ describe('<MediaContext />', () => {
 
     before(() => {
       window.matchMedia = (query) => {
-        return { matches: false }
+        return {
+          matches: false,
+          addListener: (listener) => {},
+          removeListener: (listener) => {}
+        }
       }
       match = expect.spyOn(MediaContext.prototype, 'match')
-      handleResize = expect.spyOn(MediaContext.prototype, 'handleResize')
       tree = mount(<MediaContext />)
       const e = new Event('resize')
       window.dispatchEvent(e)
     })
 
     it('should call the handleResize method', () => {
-      expect(handleResize.call.length).toEqual(1)
+      expect(match.call.length).toEqual(1)
     })
 
     it('should call the match method', () => {

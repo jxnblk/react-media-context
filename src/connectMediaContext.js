@@ -1,9 +1,16 @@
 
 import React from 'react'
-import debounce from 'lodash/debounce'
-import difference from 'lodash/difference'
 
-const connectMediaContext = (Comp) => {
+const defaultQueries = {
+  xsmall: 'screen and (max-width: 40em)',
+  small: 'screen and (min-width: 40em)',
+  medium: 'screen and (min-width: 52em)',
+  large: 'screen and (min-width: 64em)'
+}
+
+const connectMediaContext = (config = {}) => (Comp) => {
+  const queries = config.queries || defaultQueries
+
   class MediaContext extends React.Component {
     constructor () {
       super()
@@ -13,7 +20,6 @@ const connectMediaContext = (Comp) => {
         ]
       }
       this.match = this.match.bind(this)
-      this.handleResize = debounce(this.handleResize.bind(this), 100)
     }
 
     getChildContext () {
@@ -21,7 +27,6 @@ const connectMediaContext = (Comp) => {
     }
 
     match () {
-      const { queries } = this.props
       const media = []
 
       for (var key in queries) {
@@ -31,53 +36,29 @@ const connectMediaContext = (Comp) => {
         }
       }
 
-      const diffs = difference(this.state.media, media)
-
-      if (diffs.length) {
-        console.log(diffs)
-        this.setState({ media })
-      }
-    }
-
-    handleResize () {
-      this.match()
+      this.setState({ media })
     }
 
     componentDidMount () {
       this.match()
-      window.addEventListener('resize', this.handleResize)
+      for (let key in queries) {
+        window.matchMedia(queries[key]).addListener(this.match)
+      }
     }
 
     componentWillUnmount () {
-      window.removeEventListener('resize', this.handleResize)
+      for (let key in queries) {
+        window.matchMedia(queries[key]).removeListener(this.match)
+      }
     }
 
     render () {
-      const props = {...this.props}
-      delete props.queries
-
-      return (
-        <Comp {...props}
-          {...this.state} />
-      )
+      return <Comp {...this.props} {...this.state} />
     }
   }
 
   MediaContext.childContextTypes = {
     media: React.PropTypes.array
-  }
-
-  MediaContext.propTypes = {
-    queries: React.PropTypes.object
-  }
-
-  MediaContext.defaultProps = {
-    queries: {
-      'xsmall': 'screen and (max-width: 40em)',
-      'small': 'screen and (min-width: 40em)',
-      'medium': 'screen and (min-width: 52em)',
-      'large': 'screen and (min-width: 64em)'
-    }
   }
 
   return MediaContext
