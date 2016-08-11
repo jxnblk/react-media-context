@@ -1,7 +1,7 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import MediaContext from '../src/MediaContext'
+import MediaContext, { connectMediaContext } from '../src/MediaContext'
 import readme from 'html!markdown!../README.md'
 
 const div = document.getElementById('app')
@@ -31,7 +31,7 @@ const Header = ({}, { media }) => {
         Hello
       </h1>
       <p>
-        {'<MediaContext /> provider'}
+        {'<MediaContext /> provider and higher order component'}
       </p>
       <a href='//github.com/jxnblk/react-media-context'>GitHub</a>
     </header>
@@ -59,11 +59,42 @@ Header.contextTypes = {
   media: React.PropTypes.array
 }
 
+const HOCDemo = connectMediaContext()((props) => {
+  const size = props.media[props.media.length - 1]
+  const fontSizes = {
+    xsmall: 20,
+    small: 24,
+    medium: 32,
+    large: 48
+  }
+  const fontSize = fontSizes[size]
+
+  const sx = {
+    root: {
+      padding: size === 'xsmall' ? 16 : 32,
+    },
+    heading: {
+      fontSize
+    },
+    pre: {
+      fontFamily: 'Menlo, monospace'
+    }
+  }
+
+  return (
+    <div style={sx.root}>
+      <h2 style={sx.heading}>HOC Demo {fontSize}px</h2>
+      <pre style={sx.pre}>matches: {props.media.join(', ')}</pre>
+    </div>
+  )
+})
+
 class App extends React.Component {
   render () {
     return (
       <MediaContext>
         <Header />
+        <HOCDemo />
         <Readme />
       </MediaContext>
     )
