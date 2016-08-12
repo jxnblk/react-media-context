@@ -60,6 +60,9 @@ const MyComponent = () => {
 export default connectMediaContext()(MyComponent)
 ```
 
+The `media` array provided through React context is a list of keys from the `queries` object.
+The default keys are `xsmall`, `small`, `medium`, and `large`.
+
 ## How is this different from *x*?
 
 Most other responsive React HOCs tend to work on the principle of *showing and hiding* children based on media queries. With this component, you can alter styling and functionality of components responsively.
