@@ -3,24 +3,25 @@
 
 [![Build Status](https://travis-ci.org/jxnblk/react-media-context.svg?branch=master)](https://travis-ci.org/jxnblk/react-media-context)
 
-React higher-order component (HOC) to provide context for the currently matched media query.
-
-## Getting Started
+React provider and higher order component for window.matchMedia
 
 ```sh
-npm i -S react-media-context
+npm i react-media-context
 ```
 
 ## Usage
 
 ```js
 import React from 'react'
-import MediaContext from 'react-media-context'
+import {
+  MatchMediaProvider,
+  withMatchMedia
+} from 'react-media-context'
 
-const Title = (props, context) => {
-  const { media } = context
+const Title = withMatchMedia(props => {
+  const { matches } = props
   let fontSize = 32
-  if (media.indexOf('large') > -1) {
+  if (matches.includes('large')) {
     fontSize = 64
   }
 
@@ -35,15 +36,11 @@ const Title = (props, context) => {
   )
 }
 
-Title.contextTypes = {
-  media: React.PropTypes.array
-}
-
 class App extends React.Component {
   render () {
-    <MediaContext>
+    <MatchMediaProvider>
       <Title />
-    </MediaContext>
+    </MatchMediaProvider>
   }
 }
 ```
@@ -62,10 +59,9 @@ This could be handy for:
 
 ## Props
 
-- `queries` (Object) - Media queries to match against on window resize
+- `mediaQueries` (Object) - Media queries to match against on window resize
 
 ```js
-// Default
 {
   'xsmall': 'screen and (max-width: 40em)',
   'small': 'screen and (min-width: 40em)',
